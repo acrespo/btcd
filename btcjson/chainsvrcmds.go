@@ -644,6 +644,22 @@ func NewGetRawMempoolCmd(verbose *bool) *GetRawMempoolCmd {
 	}
 }
 
+// DropTxFromMempoolCmd defines the dropmempoolentry JSON-RPC command.
+type DropTxFromMempoolCmd struct {
+	Txid string
+}
+
+// NewDropTxFromMempoolCmd returns a new instance which can be used to issue a
+// dropmempoolentry JSON-RPC command.
+//
+// The parameters which are pointers indicate they are optional.  Passing nil
+// for optional parameters will use the default value.
+func NewDropTxFromMempoolCmd(txid string) *DropTxFromMempoolCmd {
+	return &DropTxFromMempoolCmd{
+		Txid: txid,
+	}
+}
+
 // GetRawTransactionCmd defines the getrawtransaction JSON-RPC command.
 //
 // NOTE: This field is an int versus a bool to remain compatible with Bitcoin
@@ -1081,6 +1097,7 @@ func init() {
 	MustRegisterCmd("getnodeaddresses", (*GetNodeAddressesCmd)(nil), flags)
 	MustRegisterCmd("getpeerinfo", (*GetPeerInfoCmd)(nil), flags)
 	MustRegisterCmd("getrawmempool", (*GetRawMempoolCmd)(nil), flags)
+	MustRegisterCmd("dropmempoolentry", (*DropTxFromMempoolCmd)(nil), flags)
 	MustRegisterCmd("getrawtransaction", (*GetRawTransactionCmd)(nil), flags)
 	MustRegisterCmd("gettxout", (*GetTxOutCmd)(nil), flags)
 	MustRegisterCmd("gettxoutproof", (*GetTxOutProofCmd)(nil), flags)
