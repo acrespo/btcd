@@ -816,6 +816,43 @@ func (c *Client) GetRawMempoolVerbose() (map[string]btcjson.GetRawMempoolVerbose
 	return c.GetRawMempoolVerboseAsync().Receive()
 }
 
+// DropTxFromMempool returns a map of transaction hashes to an associated
+// data structure with information about the transaction for all transactions in
+// the memory pool.
+func (c *Client) DropTxFromMempool(txHash string) (bool, error) {
+	return c.DropTxFromMempoolAsync(txHash).Receive()
+}
+
+// DropTxFromMempoolAsync returns an instance of a type that can be used to
+// get the result of the RPC at some future time by invoking the Receive
+// function on the returned instance.
+func (c *Client) DropTxFromMempoolAsync(txHash string) FutureDropTxFromMempoolResult {
+	cmd := btcjson.NewDropTxFromMempoolCmd(txHash)
+	return c.SendCmd(cmd)
+}
+
+// FutureDropTxFromMempoolResult is a future promise to deliver the result of a
+// DropTxFromMempool RPC invocation (or an applicable error).
+type FutureDropTxFromMempoolResult chan *Response
+
+// Receive waits for the Response promised by the future and returns the info
+// provided by the server.
+func (r FutureDropTxFromMempoolResult) Receive() (bool, error) {
+	res, err := ReceiveFuture(r)
+	if err != nil {
+		return false, err
+	}
+
+	// Unmarshal result as a dropmempoolentry result object.
+	var txDropped bool
+	err = json.Unmarshal(res, &txDropped)
+	if err != nil {
+		return false, err
+	}
+
+	return txDropped, nil
+}
+
 // FutureEstimateFeeResult is a future promise to deliver the result of a
 // EstimateFeeAsync RPC invocation (or an applicable error).
 type FutureEstimateFeeResult chan *Response
